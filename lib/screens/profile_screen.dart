@@ -317,7 +317,7 @@ class ProfileScreen extends StatelessWidget {
                       subtitle: '24/7 shopping support team',
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Customer support: support@shopease.com')),
+                          const SnackBar(content: Text('Customer support: support@smartdairy.coop')),
                         );
                       },
                     ),
@@ -338,7 +338,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'ShopEase App v1.0.0 • Axolotls Interview Project',
+              'Smart Dairy App v1.0.0 • Cooperative Dairy Management',
               style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8)),
             ),
           ],
