@@ -3,12 +3,9 @@
 # Multi-stage production build optimized for Render, Railway, AWS ECS, Docker
 # ==============================================================================
 
-# STAGE 1: Build Stage
-FROM eclipse-temurin:23-jdk-alpine AS builder
+# STAGE 1: Build Stage (Ubuntu/glibc with full TLS/CA certificates & bash)
+FROM eclipse-temurin:23-jdk AS builder
 WORKDIR /app
-
-# Install bash required by standard Gradle wrapper script on Alpine
-RUN apk add --no-cache bash
 
 # Copy Gradle wrapper files
 COPY gradlew .
@@ -27,13 +24,13 @@ COPY src src
 # Build executable bootJar (skipping tests for fast deterministic cloud builds)
 RUN ./gradlew bootJar -x test --no-daemon
 
-# STAGE 2: Lightweight Production Runtime
-FROM eclipse-temurin:23-jdk-alpine
+# STAGE 2: Production Runtime with full glibc TLS & CA certs
+FROM eclipse-temurin:23-jdk AS runner
 WORKDIR /app
 
 # Create non-root application user for production security
-RUN addgroup -S smartdairy && adduser -S smartdairy -G smartdairy
-USER smartdairy:smartdairy
+RUN useradd -m -s /bin/bash smartdairy
+USER smartdairy
 
 # Copy executable jar from builder stage
 COPY --from=builder /app/build/libs/smartdairy-backend-1.0.0.jar app.jar
@@ -42,5 +39,5 @@ COPY --from=builder /app/build/libs/smartdairy-backend-1.0.0.jar app.jar
 ENV PORT=8080
 EXPOSE 8080
 
-# Launch application with dynamic port mapping and secure random seed
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -Djava.security.egd=file:/dev/./urandom -jar app.jar"]
+# Launch application with dynamic port mapping, TLS SNI extension, and secure random seed
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT} -Djava.security.egd=file:/dev/./urandom -Djsse.enableSNIExtension=true -jar app.jar"]
