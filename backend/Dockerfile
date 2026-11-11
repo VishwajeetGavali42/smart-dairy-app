@@ -7,6 +7,9 @@
 FROM eclipse-temurin:23-jdk-alpine AS builder
 WORKDIR /app
 
+# Install bash required by standard Gradle wrapper script on Alpine
+RUN apk add --no-cache bash
+
 # Copy Gradle wrapper files
 COPY gradlew .
 COPY gradle gradle
