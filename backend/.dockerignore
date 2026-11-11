@@ -1,0 +1,10 @@
+.gradle
+build
+out
+.env
+.env.*
+*.log
+*.class
+.git
+.idea
+*.iml

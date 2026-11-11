@@ -1,0 +1,68 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: smartdairy-backend
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/smart_dairy}
+      auto-index-creation: true
+
+ai:
+  service:
+    url: http://localhost:8000
+
+ollama:
+  enabled: ${OLLAMA_ENABLED:true}
+  api-url: ${OLLAMA_API_URL:http://127.0.0.1:11434/api/chat}
+  base-url: ${OLLAMA_BASE_URL:http://127.0.0.1:11434}
+  model: ${OLLAMA_MODEL:llama3.1}
+  timeout-seconds: ${OLLAMA_TIMEOUT:90}
+  max-tokens: 180
+  temperature: 0.3
+
+llm:
+  provider: ${LLM_PROVIDER:openai}
+  api-key: ${OPENAI_API_KEY:${LLM_API_KEY:}}
+  base-url: ${LLM_BASE_URL:https://api.openai.com/v1}
+  model: ${OPENAI_MODEL:${LLM_MODEL:gpt-4o-mini}}
+  temperature: 0.3
+  max-tokens: 800
+
+online-knowledge:
+  enabled: ${ONLINE_KNOWLEDGE_ENABLED:true}
+  timeout-seconds: ${ONLINE_KNOWLEDGE_TIMEOUT:6}
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 hours in ms
+
+smartdairy:
+  sms:
+    enabled: ${SMS_ENABLED:true}
+    provider: ${SMS_PROVIDER:FAST2SMS}
+    sender-id: ${SMS_SENDER_ID:LDKDRY}
+    fast2sms:
+      api-key: ${FAST2SMS_API_KEY:}
+    twilio:
+      account-sid: ${TWILIO_ACCOUNT_SID:}
+      auth-token: ${TWILIO_AUTH_TOKEN:}
+      from-number: ${TWILIO_FROM_NUMBER:}
+  storage:
+    provider: ${STORAGE_PROVIDER:AWS_S3}
+    s3:
+      bucket: ${AWS_S3_BUCKET:smartdairy-storage-bucket}
+      region: ${AWS_S3_REGION:ap-south-1}
+      access-key: ${AWS_ACCESS_KEY_ID:}
+      secret-key: ${AWS_SECRET_ACCESS_KEY:}
+  fcm:
+    enabled: ${FCM_ENABLED:true}
+    server-key: ${FCM_SERVER_KEY:}
+    project-id: ${FCM_PROJECT_ID:smartdairy-fcm}
+  maps:
+    api-key: ${GOOGLE_MAPS_API_KEY:}
+  mail:
+    enabled: ${MAIL_ENABLED:true}
+    from: ${MAIL_FROM:noreply@smartdairy.coop}
+
