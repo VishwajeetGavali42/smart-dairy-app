@@ -175,6 +175,7 @@ class AiChatService {
 
     final candidateHosts = [
       '$baseUrl$statusEndpoint',
+      'https://smart-dairy-app-ak9w.onrender.com/api/v1$statusEndpoint',
       'http://192.168.118.201:8080/api/v1$statusEndpoint',
       'http://10.0.2.2:8080/api/v1$statusEndpoint',
       'http://127.0.0.1:8080/api/v1$statusEndpoint',
@@ -359,7 +360,7 @@ Provide concise, highly accurate, and helpful answers. If asked in Marathi, resp
         // Fast probe to verify if host is alive before waiting for full Ollama inference
         final probeUri = Uri.parse('${uri.scheme}://${uri.authority}/api/v1/auth/health');
         try {
-          final probeRes = await http.get(probeUri).timeout(const Duration(milliseconds: 1200));
+          final probeRes = await http.get(probeUri).timeout(const Duration(seconds: 4));
           if (probeRes.statusCode != 200 && probeRes.statusCode != 401) {
             continue;
           }

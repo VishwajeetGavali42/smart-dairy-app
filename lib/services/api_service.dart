@@ -6,8 +6,17 @@ import 'package:http/http.dart' as http;
 import 'pdf_generator_service.dart';
 
 class ApiService {
-  static String serverHost = '192.168.118.201:8080'; // 192.168.118.201 for physical mobile on Wi-Fi, 10.0.2.2 for Emulator, 127.0.0.1 for local
-  static String get baseUrl => 'http://$serverHost/api/v1';
+  static String serverHost = 'smart-dairy-app-ak9w.onrender.com'; // Live Cloud Backend (24/7)
+  static String get baseUrl {
+    final clean = serverHost
+        .trim()
+        .replaceAll('http://', '')
+        .replaceAll('https://', '')
+        .replaceAll('/api/v1', '')
+        .replaceAll('/', '');
+    final scheme = (clean.contains('onrender.com') || serverHost.contains('https://')) ? 'https' : 'http';
+    return '$scheme://$clean/api/v1';
+  }
   static void setServerHost(String host) {
     final clean = host.trim().replaceAll('http://', '').replaceAll('https://', '').replaceAll('/api/v1', '').replaceAll('/', '');
     if (clean.isNotEmpty) {
@@ -19,10 +28,11 @@ class ApiService {
   /// Ping and test server latency from mobile phone
   static Future<Map<String, dynamic>> testServerConnection(String host) async {
     final clean = host.trim().replaceAll('http://', '').replaceAll('https://', '').replaceAll('/api/v1', '').replaceAll('/', '');
-    final testUrl = 'http://$clean/api/v1/auth/health';
+    final scheme = (clean.contains('onrender.com') || host.contains('https://')) ? 'https' : 'http';
+    final testUrl = '$scheme://$clean/api/v1/auth/health';
     final sw = Stopwatch()..start();
     try {
-      final res = await http.get(Uri.parse(testUrl)).timeout(const Duration(milliseconds: 2000));
+      final res = await http.get(Uri.parse(testUrl)).timeout(const Duration(seconds: 4));
       sw.stop();
       if (res.statusCode == 200) {
         setServerHost(clean);
@@ -239,6 +249,7 @@ class ApiService {
 
     final candidateHosts = [
       serverHost,
+      'smart-dairy-app-ak9w.onrender.com',
       '192.168.118.201:8080',
       '10.0.2.2:8080',
       '127.0.0.1:8080',
@@ -252,9 +263,10 @@ class ApiService {
             .replaceAll('https://', '')
             .replaceAll('/api/v1', '')
             .replaceAll('/', '');
+        final scheme = (clean.contains('onrender.com') || host.contains('https://')) ? 'https' : 'http';
         final res = await http
-            .get(Uri.parse('http://' + clean + '/api/v1/auth/health'))
-            .timeout(const Duration(milliseconds: 1800));
+            .get(Uri.parse('$scheme://$clean/api/v1/auth/health'))
+            .timeout(const Duration(seconds: 4));
         if (res.statusCode == 200) {
           serverHost = clean;
           isOffline = false;
