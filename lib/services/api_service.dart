@@ -452,7 +452,7 @@ class ApiService {
               if (role != null) 'role': role,
             }),
           )
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 25));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -924,7 +924,7 @@ class ApiService {
       return [];
     }
 
-    if (!isOffline && authToken != null) {
+    if (authToken != null && !authToken!.startsWith('offline_token')) {
       try {
         String endpoint;
         if (startDate != null && endDate != null) {
@@ -943,7 +943,7 @@ class ApiService {
 
         final response = await http
             .get(Uri.parse(endpoint), headers: _headers)
-            .timeout(const Duration(seconds: 4));
+            .timeout(const Duration(seconds: 15));
 
         if (response.statusCode == 200) {
           final serverList = jsonDecode(response.body) as List<dynamic>;
@@ -1005,14 +1005,14 @@ class ApiService {
     }
 
     // BUG 2: Fetch live summary from Spring Boot / MongoDB backend whenever online
-    if (!isOffline && authToken != null) {
+    if (authToken != null && !authToken!.startsWith('offline_token')) {
       try {
         final response = await http
             .get(
               Uri.parse('$baseUrl/collections/summary/today'),
               headers: _headers,
             )
-            .timeout(const Duration(seconds: 4));
+            .timeout(const Duration(seconds: 15));
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body) as Map<String, dynamic>;
           return data;
@@ -1123,7 +1123,7 @@ class ApiService {
     }
 
     // Persist permanently to MongoDB via Spring Boot backend
-    if (!isOffline && authToken != null) {
+    if (authToken != null && !authToken!.startsWith('offline_token')) {
       try {
         final response = await http
             .post(
@@ -1131,7 +1131,7 @@ class ApiService {
               headers: _headers,
               body: jsonEncode(newCollection),
             )
-            .timeout(const Duration(seconds: 4));
+            .timeout(const Duration(seconds: 15));
         if (response.statusCode == 200 || response.statusCode == 201) {
           final saved = jsonDecode(response.body) as Map<String, dynamic>;
           final idx = _localCollections.indexWhere(
